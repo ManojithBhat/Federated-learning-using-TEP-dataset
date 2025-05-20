@@ -28,11 +28,7 @@ This repository contains a federated learning setup with one server and two clie
 ## Setup Instructions
 
 ### 1. Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/federated-learning-project.git
-cd federated-learning-project
-```
+I hope you guys know how to do it 
 
 ### 2. Set Up Virtual Environments and Install Dependencies
 
