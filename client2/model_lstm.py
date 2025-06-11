@@ -2,15 +2,22 @@ import torch
 import torch.nn as nn
 
 class LSTMClassifier(nn.Module):
-    def __init__(self, input_dim: int, hidden_dim: int, output_dim: int, num_layers: int = 1):
-        super().__init__()
-        self.lstm = nn.LSTM(input_dim, hidden_dim, num_layers, batch_first=True)
+    def __init__(self, input_dim=52, hidden_dim=64, output_dim=2):
+        super(LSTMClassifier, self).__init__()
+        self.lstm1 = nn.LSTM(input_dim, hidden_dim, batch_first=True)
+        self.lstm2 = nn.LSTM(hidden_dim, hidden_dim, batch_first=True)
         self.fc = nn.Linear(hidden_dim, output_dim)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # x shape: (batch_size, seq_len, input_dim)
-        out, _ = self.lstm(x)
-        # take last time-step
-        last = out[:, -1, :]
-        return self.fc(last)
+        
+    def forward(self, x):
+        # x shape: [batch_size, sequence_length, input_dim]
+        x, _ = self.lstm1(x)
+        # After lstm1: [batch_size, sequence_length, hidden_dim]
+        # For the second LSTM, we want all outputs
+        x, _ = self.lstm2(x)
+        # After lstm2: [batch_size, sequence_length, hidden_dim], but we only need the last output
+        x = x[:, -1, :]  # Take the output from the last time step
+        # Shape: [batch_size, hidden_dim]
+        x = self.fc(x)
+        # Shape: [batch_size, output_dim]
+        return x
 
